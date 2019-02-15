@@ -1,3 +1,7 @@
 [submodule "libcxx"]
 	path = libcxx
-	url = https://github.com/ogiroux/libcxx
+	url = ../libcxx.git
+[submodule ".upstream-tests"]
+	path = .upstream-tests
+	url = ../libcxx.git
+	branch = master
