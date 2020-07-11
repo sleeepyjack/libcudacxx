@@ -4,4 +4,4 @@
 [submodule ".upstream-tests"]
 	path = .upstream-tests
 	url = ../libcxx.git
-	branch = master
+	branch = main
