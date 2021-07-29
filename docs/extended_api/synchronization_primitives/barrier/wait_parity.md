@@ -12,8 +12,8 @@ __host__ __device__ void cuda::std::barrier::wait_parity(bool phase);
 __host__ __device__ bool cuda::std::barrier::try_wait_parity(bool phase);
 ```
 
-`barrier::wait_parity` stalls execution while the barrier is not at the specified phase.
-`barrier::try_wait_parity` queries the the state of the barrier against the specified phase.
+`barrier::wait_parity` stalls execution while the barrier is not at the specified parity.
+`barrier::try_wait_parity` returns true if the parity of the barrier matches the given parity.
 
 ## Return Value
 

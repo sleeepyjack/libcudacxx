@@ -23,7 +23,7 @@ It has the same interface and semantics as [`cuda::std::barrier`], with the
 
 | [`cuda::barrier::init`]                        | Initialize a `cuda::barrier`. `(friend function)`                 |
 | [`cuda::device::barrier_native_handle`]        | Get the native handle to a `cuda::barrier`. `(function template)` |
-| [`cuda::barrier::wait_parity/try_wait_parity`] | Wait on a `specific` phase of the barrier |
+| [`cuda::barrier::wait_parity/try_wait_parity`] | Wait on or check the parity of the barrier. |
 
 ## NVCC `__shared__` Initialization Warnings
 
