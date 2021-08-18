@@ -25,13 +25,18 @@ The maximum is found using [`cuda::std::max`].
 
 __global__ void example_kernel() {
   cuda::atomic<int> a(0);
+  
+  // Like fetch_add, return value prior to modification
   auto x = a.fetch_max(1); // Operates as if unsigned.
+
+  // Obtain current value
   auto y = a.load();
-  assert(x == 1 && y == 0);
+
+  assert(x == 0 && y == 1);
 }
 ```
 
-[See it on Godbolt](https://godbolt.org/z/rexn5T78G){: .btn }
+[See it on Godbolt](https://cuda.godbolt.org/z/44arz5TMh){: .btn }
 
 
 [`cuda::std::max`]: https://en.cppreference.com/w/cpp/algorithm/max
