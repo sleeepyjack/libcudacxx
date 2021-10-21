@@ -635,6 +635,8 @@ template <class BidirectionalIterator, class Compare>
 
 */
 
+#ifndef __cuda_std__
+
 #include <__config>
 #include <initializer_list>
 #include <type_traits>
@@ -656,6 +658,7 @@ template <class BidirectionalIterator, class Compare>
 _LIBCUDACXX_PUSH_MACROS
 #include <__undef_macros>
 
+#endif // __cuda_std__
 
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
@@ -833,6 +836,7 @@ struct __comp_ref_type {
 #endif
 };
 
+#ifndef __cuda_std__
 // all_of
 
 template <class _InputIterator, class _Predicate>
@@ -2514,6 +2518,7 @@ min_element(_ForwardIterator __first, _ForwardIterator __last)
               __less<typename iterator_traits<_ForwardIterator>::value_type>());
 }
 
+#endif // __cuda_std__
 // min
 
 template <class _Tp, class _Compare>
@@ -2533,6 +2538,8 @@ min(const _Tp& __a, const _Tp& __b)
 {
     return _CUDA_VSTD::min(__a, __b, __less<_Tp>());
 }
+
+#ifndef __cuda_std__
 
 #ifndef _LIBCUDACXX_CXX03_LANG
 
@@ -2587,6 +2594,7 @@ max_element(_ForwardIterator __first, _ForwardIterator __last)
               __less<typename iterator_traits<_ForwardIterator>::value_type>());
 }
 
+#endif // __cuda_std__
 // max
 
 template <class _Tp, class _Compare>
@@ -2606,6 +2614,8 @@ max(const _Tp& __a, const _Tp& __b)
 {
     return _CUDA_VSTD::max(__a, __b, __less<_Tp>());
 }
+
+#ifndef __cuda_std__
 
 #ifndef _LIBCUDACXX_CXX03_LANG
 
@@ -2714,6 +2724,7 @@ minmax_element(_ForwardIterator __first, _ForwardIterator __last)
               __less<typename iterator_traits<_ForwardIterator>::value_type>());
 }
 
+#endif // __cuda_std__
 // minmax
 
 template<class _Tp, class _Compare>
@@ -2735,6 +2746,7 @@ minmax(const _Tp& __a, const _Tp& __b)
     return _CUDA_VSTD::minmax(__a, __b, __less<_Tp>());
 }
 
+#ifndef __cuda_std__
 #ifndef _LIBCUDACXX_CXX03_LANG
 
 template<class _Tp, class _Compare>
@@ -5673,6 +5685,8 @@ prev_permutation(_BidirectionalIterator __first, _BidirectionalIterator __last)
     return _CUDA_VSTD::prev_permutation(__first, __last,
                                   __less<typename iterator_traits<_BidirectionalIterator>::value_type>());
 }
+
+#endif // __cuda_std__
 
 _LIBCUDACXX_END_NAMESPACE_STD
 
