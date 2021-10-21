@@ -21,7 +21,7 @@
 
 template <class T, class C>
 void
-test(const T& a, const T& b, C c, const T& x)
+__host__ __device__ test(const T& a, const T& b, C c, const T& x)
 {
     assert(&cuda::std::max(a, b, c) == &x);
 }

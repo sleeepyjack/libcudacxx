@@ -19,7 +19,7 @@
 
 template <class T>
 void
-test(const T& a, const T& b, const T& x, const T& y)
+__host__ __device__ test(const T& a, const T& b, const T& x, const T& y)
 {
     cuda::std::pair<const T&, const T&> p = cuda::std::minmax(a, b);
     assert(&p.first == &x);
