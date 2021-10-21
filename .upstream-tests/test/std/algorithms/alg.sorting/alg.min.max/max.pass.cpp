@@ -53,5 +53,58 @@ int main(int, char**)
     }
 #endif
 
+    {
+    __int128_t x = 0;
+    __int128_t y = 0;
+    test(x, y, x);
+    test(y, x, y);
+    }
+    {
+    __int128_t x = 0;
+    __int128_t y = 1;
+    test(x, y, y);
+    test(y, x, y);
+    }
+    {
+    __int128_t x = 1;
+    __int128_t y = 0;
+    test(x, y, x);
+    test(y, x, x);
+    }
+#if TEST_STD_VER >= 14
+    {
+    constexpr __int128_t x = 1;
+    constexpr __int128_t y = 0;
+    static_assert(cuda::std::max(x, y) == x, "" );
+    static_assert(cuda::std::max(y, x) == x, "" );
+    }
+#endif
+
+    {
+    __uint128_t x = 0;
+    __uint128_t y = 0;
+    test(x, y, x);
+    test(y, x, y);
+    }
+    {
+    __uint128_t x = 0;
+    __uint128_t y = 1;
+    test(x, y, y);
+    test(y, x, y);
+    }
+    {
+    __uint128_t x = 1;
+    __uint128_t y = 0;
+    test(x, y, x);
+    test(y, x, x);
+    }
+#if TEST_STD_VER >= 14
+    {
+    constexpr __uint128_t x = 1;
+    constexpr __uint128_t y = 0;
+    static_assert(cuda::std::max(x, y) == x, "" );
+    static_assert(cuda::std::max(y, x) == x, "" );
+    }
+#endif
   return 0;
 }

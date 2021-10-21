@@ -61,5 +61,71 @@ int main(int, char**)
     }
 #endif
 
+    {
+    __int128_t x = 0;
+    __int128_t y = 0;
+    test(x, y, x, y);
+    test(y, x, y, x);
+    }
+    {
+    __int128_t x = 0;
+    __int128_t y = 1;
+    test(x, y, x, y);
+    test(y, x, x, y);
+    }
+    {
+    __int128_t x = 1;
+    __int128_t y = 0;
+    test(x, y, y, x);
+    test(y, x, y, x);
+    }
+#if TEST_STD_VER >= 14
+    {
+//  Note that you can't take a reference to a local var, since
+//  its address is not a compile-time constant.
+    constexpr static __int128_t x = 1;
+    constexpr static __int128_t y = 0;
+    constexpr auto p1 = cuda::std::minmax (x, y);
+    static_assert(p1.first  == y, "");
+    static_assert(p1.second == x, "");
+    constexpr auto p2 = cuda::std::minmax (y, x);
+    static_assert(p2.first  == y, "");
+    static_assert(p2.second == x, "");
+    }
+#endif
+
+    {
+    __uint128_t x = 0;
+    __uint128_t y = 0;
+    test(x, y, x, y);
+    test(y, x, y, x);
+    }
+    {
+    __uint128_t x = 0;
+    __uint128_t y = 1;
+    test(x, y, x, y);
+    test(y, x, x, y);
+    }
+    {
+    __uint128_t x = 1;
+    __uint128_t y = 0;
+    test(x, y, y, x);
+    test(y, x, y, x);
+    }
+#if TEST_STD_VER >= 14
+    {
+//  Note that you can't take a reference to a local var, since
+//  its address is not a compile-time constant.
+    constexpr static __uint128_t x = 1;
+    constexpr static __uint128_t y = 0;
+    constexpr auto p1 = cuda::std::minmax (x, y);
+    static_assert(p1.first  == y, "");
+    static_assert(p1.second == x, "");
+    constexpr auto p2 = cuda::std::minmax (y, x);
+    static_assert(p2.first  == y, "");
+    static_assert(p2.second == x, "");
+    }
+#endif
+
   return 0;
 }

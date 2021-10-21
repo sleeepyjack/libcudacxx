@@ -53,5 +53,59 @@ int main(int, char**)
     }
 #endif
 
+    {
+    __int128_t x = 0;
+    __int128_t y = 0;
+    test(x, y, x);
+    test(y, x, y);
+    }
+    {
+    __int128_t x = 0;
+    __int128_t y = 1;
+    test(x, y, x);
+    test(y, x, x);
+    }
+    {
+    __int128_t x = 1;
+    __int128_t y = 0;
+    test(x, y, y);
+    test(y, x, y);
+    }
+#if TEST_STD_VER >= 14
+    {
+    constexpr __int128_t x = 1;
+    constexpr __int128_t y = 0;
+    static_assert(cuda::std::min(x, y) == y, "" );
+    static_assert(cuda::std::min(y, x) == y, "" );
+    }
+#endif
+
+    {
+    __uint128_t x = 0;
+    __uint128_t y = 0;
+    test(x, y, x);
+    test(y, x, y);
+    }
+    {
+    __uint128_t x = 0;
+    __uint128_t y = 1;
+    test(x, y, x);
+    test(y, x, x);
+    }
+    {
+    __uint128_t x = 1;
+    __uint128_t y = 0;
+    test(x, y, y);
+    test(y, x, y);
+    }
+#if TEST_STD_VER >= 14
+    {
+    constexpr __uint128_t x = 1;
+    constexpr __uint128_t y = 0;
+    static_assert(cuda::std::min(x, y) == y, "" );
+    static_assert(cuda::std::min(y, x) == y, "" );
+    }
+#endif
+
   return 0;
 }

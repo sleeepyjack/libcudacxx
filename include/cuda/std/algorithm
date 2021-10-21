@@ -24,5 +24,3 @@
 #include "detail/__pragma_pop"
 
 #endif //_CUDA_ALGORITHM
-
-
