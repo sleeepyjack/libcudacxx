@@ -32,13 +32,8 @@ RUN sh /tmp/cmake.sh --skip-license --prefix=/usr
 # Copy NVCC and the CUDA runtime from the source tree.
 ADD bin /sw/gpgpu/bin
 
-# Copy the core CUDA headers from the source tree.
-ADD cuda/import/*.h* /sw/gpgpu/cuda/import/
-ADD cuda/common/*.h* /sw/gpgpu/cuda/common/
-ADD cuda/tools/ /sw/gpgpu/cuda/tools/
-ADD opencl/import/cl_rel/CL/*.h* /sw/gpgpu/opencl/import/cl_rel/CL/
-
 # Copy libcu++ sources from the source tree.
+ADD cuda/tools/libcudacxxext /sw/gpgpu/cuda/tools/libcudacxxext
 ADD libcudacxx /sw/gpgpu/libcudacxx
 
 # List out everything in /sw before the build.
