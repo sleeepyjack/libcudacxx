@@ -6,14 +6,14 @@
 // Source Licenses. See LICENSE.TXT for details.
 //
 //===----------------------------------------------------------------------===//
-// UNSUPPORTED: c++98, c++03, c++11, c++14, c++17 
+// UNSUPPORTED: c++98, c++03
 
 // template <class T>
 //   constexpr T ceil2(T x) noexcept;
 
-// Returns: The minimal value y such that ispow2(y) is true and y >= x; 
+// Returns: The minimal value y such that ispow2(y) is true and y >= x;
 //    if y is not representable as a value of type T, the result is an unspecified value.
-// Remarks: This function shall not participate in overload resolution unless 
+// Remarks: This function shall not participate in overload resolution unless
 //  T is an unsigned integer type
 
 #include <cuda/std/bit>
@@ -49,7 +49,7 @@ void runtime_test()
 {
     ASSERT_SAME_TYPE(T, decltype(cuda::std::ceil2(T(0))));
     LIBCPP_ASSERT_NOEXCEPT(      cuda::std::ceil2(T(0)));
-    
+
     assert( cuda::std::ceil2(T(60)) == T( 64));
     assert( cuda::std::ceil2(T(61)) == T( 64));
     assert( cuda::std::ceil2(T(62)) == T( 64));
@@ -62,13 +62,13 @@ void runtime_test()
     assert( cuda::std::ceil2(T(69)) == T(128));
 }
 
-int main()
+int main(int, char **)
 {
-    
+
     {
     auto lambda = [](auto x) -> decltype(cuda::std::ceil2(x)) {};
     using L = decltype(lambda);
-    
+
     static_assert( cuda::std::is_invocable_v<L, unsigned char>, "");
     static_assert( cuda::std::is_invocable_v<L, unsigned int>, "");
     static_assert( cuda::std::is_invocable_v<L, unsigned long>, "");
@@ -104,7 +104,7 @@ int main()
     static_assert( cuda::std::is_invocable_v<L, __uint128_t>, "");
     static_assert(!cuda::std::is_invocable_v<L, __int128_t>, "");
 #endif
- 
+
     static_assert(!cuda::std::is_invocable_v<L, A>, "");
     static_assert(!cuda::std::is_invocable_v<L, E1>, "");
     static_assert(!cuda::std::is_invocable_v<L, E2>, "");

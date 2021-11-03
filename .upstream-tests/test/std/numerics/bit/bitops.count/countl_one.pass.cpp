@@ -6,7 +6,7 @@
 // Source Licenses. See LICENSE.TXT for details.
 //
 //===----------------------------------------------------------------------===//
-// UNSUPPORTED: c++98, c++03, c++11, c++14, c++17 
+// UNSUPPORTED: c++98, c++03
 
 // template <class T>
 //   constexpr int countl_one(T x) noexcept;
@@ -14,7 +14,7 @@
 // The number of consecutive 1 bits, starting from the most significant bit.
 //   [ Note: Returns N if x == cuda::std::numeric_limits<T>::max(). ]
 //
-// Remarks: This function shall not participate in overload resolution unless 
+// Remarks: This function shall not participate in overload resolution unless
 //	T is an unsigned integer type
 
 #include <cuda/std/bit>
@@ -53,7 +53,7 @@ void runtime_test()
 	ASSERT_SAME_TYPE(int, decltype(cuda::std::countl_one(T(0))));
 	ASSERT_NOEXCEPT(               cuda::std::countl_one(T(0)));
 	const int dig = cuda::std::numeric_limits<T>::digits;
-	
+
 	assert( cuda::std::countl_one(T(~121)) == dig - 7);
 	assert( cuda::std::countl_one(T(~122)) == dig - 7);
 	assert( cuda::std::countl_one(T(~123)) == dig - 7);
@@ -66,12 +66,12 @@ void runtime_test()
 	assert( cuda::std::countl_one(T(~130)) == dig - 8);
 }
 
-int main()
+int main(int, char **)
 {
 	{
     auto lambda = [](auto x) -> decltype(cuda::std::countl_one(x)) {};
     using L = decltype(lambda);
-    
+
     static_assert( cuda::std::is_invocable_v<L, unsigned char>, "");
     static_assert( cuda::std::is_invocable_v<L, unsigned int>, "");
     static_assert( cuda::std::is_invocable_v<L, unsigned long>, "");
@@ -107,7 +107,7 @@ int main()
     static_assert( cuda::std::is_invocable_v<L, __uint128_t>, "");
     static_assert(!cuda::std::is_invocable_v<L, __int128_t>, "");
 #endif
- 
+
     static_assert(!cuda::std::is_invocable_v<L, A>, "");
     static_assert(!cuda::std::is_invocable_v<L, E1>, "");
     static_assert(!cuda::std::is_invocable_v<L, E2>, "");

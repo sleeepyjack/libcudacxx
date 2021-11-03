@@ -6,7 +6,7 @@
 // Source Licenses. See LICENSE.TXT for details.
 //
 //===----------------------------------------------------------------------===//
-// UNSUPPORTED: c++98, c++03, c++11, c++14, c++17
+// UNSUPPORTED: c++98, c++03
 
 // template <class T>
 //   constexpr T ceil2(T x) noexcept;
@@ -31,7 +31,7 @@ constexpr bool toobig()
 	return 0 == cuda::std::ceil2(cuda::std::numeric_limits<T>::max());
 }
 
-int main()
+int main(int, char **)
 {
 //	Make sure we generate a compile-time error for UB
 	static_assert(toobig<unsigned char>(),      ""); // expected-error {{static_assert expression is not an integral constant expression}}

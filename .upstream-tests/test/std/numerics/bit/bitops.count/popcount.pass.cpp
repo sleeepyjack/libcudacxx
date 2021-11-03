@@ -6,14 +6,14 @@
 // Source Licenses. See LICENSE.TXT for details.
 //
 //===----------------------------------------------------------------------===//
-// UNSUPPORTED: c++98, c++03, c++11, c++14, c++17 
+// UNSUPPORTED: c++98, c++03
 
 // template <class T>
 //   constexpr int popcount(T x) noexcept;
 
 // Returns: The number of bits set to one in the value of x.
 //
-// Remarks: This function shall not participate in overload resolution unless 
+// Remarks: This function shall not participate in overload resolution unless
 //	T is an unsigned integer type
 
 #include <cuda/std/bit>
@@ -21,6 +21,7 @@
 #include <cuda/std/type_traits>
 #include <cuda/std/cassert>
 
+#include "../bit_backport_helpers.h"
 #include "test_macros.h"
 
 class A{};
@@ -28,7 +29,7 @@ enum       E1 : unsigned char { rEd };
 enum class E2 : unsigned char { red };
 
 template <typename T>
-constexpr bool constexpr_test()
+__host__ __device__ constexpr bool constexpr_test()
 {
 	return cuda::std::popcount(T(0)) == 0
 	   &&  cuda::std::popcount(T(1)) == 1
@@ -46,11 +47,11 @@ constexpr bool constexpr_test()
 
 
 template <typename T>
-void runtime_test()
+__host__ __device__ void runtime_test()
 {
 	ASSERT_SAME_TYPE(int, decltype(cuda::std::popcount(T(0))));
 	ASSERT_NOEXCEPT(               cuda::std::popcount(T(0)));
-	
+
 	assert( cuda::std::popcount(T(121)) == 5);
 	assert( cuda::std::popcount(T(122)) == 5);
 	assert( cuda::std::popcount(T(123)) == 6);
@@ -63,13 +64,15 @@ void runtime_test()
 	assert( cuda::std::popcount(T(130)) == 2);
 }
 
-int main()
+int main(int, char **)
 {
-	
+
     {
+#if defined(CPP17_PERFORM_INVOCABLE_TEST)
     auto lambda = [](auto x) -> decltype(cuda::std::popcount(x)) {};
     using L = decltype(lambda);
-    
+    unused(lambda);
+
     static_assert( cuda::std::is_invocable_v<L, unsigned char>, "");
     static_assert( cuda::std::is_invocable_v<L, unsigned int>, "");
     static_assert( cuda::std::is_invocable_v<L, unsigned long>, "");
@@ -105,10 +108,11 @@ int main()
     static_assert( cuda::std::is_invocable_v<L, __uint128_t>, "");
     static_assert(!cuda::std::is_invocable_v<L, __int128_t>, "");
 #endif
- 
+
     static_assert(!cuda::std::is_invocable_v<L, A>, "");
     static_assert(!cuda::std::is_invocable_v<L, E1>, "");
     static_assert(!cuda::std::is_invocable_v<L, E2>, "");
+#endif // defined(CPP17_PERFORM_INVOCABLE_TEST)
     }
 
 	static_assert(constexpr_test<unsigned char>(),      "");
@@ -164,4 +168,6 @@ int main()
 	assert( cuda::std::popcount(val+1) ==  2);
 	}
 #endif
+
+	return 0;
 }

@@ -6,19 +6,21 @@
 // Source Licenses. See LICENSE.TXT for details.
 //
 //===----------------------------------------------------------------------===//
-// UNSUPPORTED: c++98, c++03, c++11, c++14, c++17 
+// UNSUPPORTED: c++98, c++03
 
 // template <class T>
 //   constexpr int rotl(T x, unsigned int s) noexcept;
 
-// Remarks: This function shall not participate in overload resolution unless 
+// Remarks: This function shall not participate in overload resolution unless
 //  T is an unsigned integer type
+
 
 #include <cuda/std/bit>
 #include <cuda/std/cstdint>
 #include <cuda/std/type_traits>
 #include <cuda/std/cassert>
 
+#include "../bit_backport_helpers.h"
 #include "test_macros.h"
 
 class A{};
@@ -26,9 +28,9 @@ enum       E1 : unsigned char { rEd };
 enum class E2 : unsigned char { red };
 
 template <typename T>
-constexpr bool constexpr_test()
+__host__ __device__ constexpr bool constexpr_test()
 {
-    const T max = cuda::std::numeric_limits<T>::max();
+    using nl = cuda::std::numeric_limits<T>;
     return cuda::std::rotl(T(1), 0) == T( 1)
        &&  cuda::std::rotl(T(1), 1) == T( 2)
        &&  cuda::std::rotl(T(1), 2) == T( 4)
@@ -37,25 +39,25 @@ constexpr bool constexpr_test()
        &&  cuda::std::rotl(T(1), 5) == T( 32)
        &&  cuda::std::rotl(T(1), 6) == T( 64)
        &&  cuda::std::rotl(T(1), 7) == T(128)
-       &&  cuda::std::rotl(max, 0)  == max
-       &&  cuda::std::rotl(max, 1)  == max
-       &&  cuda::std::rotl(max, 2)  == max
-       &&  cuda::std::rotl(max, 3)  == max
-       &&  cuda::std::rotl(max, 4)  == max
-       &&  cuda::std::rotl(max, 5)  == max
-       &&  cuda::std::rotl(max, 6)  == max
-       &&  cuda::std::rotl(max, 7)  == max
+       &&  cuda::std::rotl(nl::max(), 0)  == nl::max()
+       &&  cuda::std::rotl(nl::max(), 1)  == nl::max()
+       &&  cuda::std::rotl(nl::max(), 2)  == nl::max()
+       &&  cuda::std::rotl(nl::max(), 3)  == nl::max()
+       &&  cuda::std::rotl(nl::max(), 4)  == nl::max()
+       &&  cuda::std::rotl(nl::max(), 5)  == nl::max()
+       &&  cuda::std::rotl(nl::max(), 6)  == nl::max()
+       &&  cuda::std::rotl(nl::max(), 7)  == nl::max()
       ;
 }
 
 
 template <typename T>
-void runtime_test()
+__host__ __device__ void runtime_test()
 {
     ASSERT_SAME_TYPE(T, decltype(cuda::std::rotl(T(0), 0)));
     ASSERT_NOEXCEPT(             cuda::std::rotl(T(0), 0));
     const T val = cuda::std::numeric_limits<T>::max() - 1;
-    
+
     assert( cuda::std::rotl(val, 0) == val);
     assert( cuda::std::rotl(val, 1) == T((val << 1) +   1));
     assert( cuda::std::rotl(val, 2) == T((val << 2) +   3));
@@ -66,13 +68,15 @@ void runtime_test()
     assert( cuda::std::rotl(val, 7) == T((val << 7) + 127));
 }
 
-int main()
+int main(int, char **)
 {
 
     {
+#if defined(CPP17_PERFORM_INVOCABLE_TEST)
     auto lambda = [](auto x) -> decltype(cuda::std::rotl(x, 1U)) {};
     using L = decltype(lambda);
-    
+    unused(lambda);
+
     static_assert( cuda::std::is_invocable_v<L, unsigned char>, "");
     static_assert( cuda::std::is_invocable_v<L, unsigned int>, "");
     static_assert( cuda::std::is_invocable_v<L, unsigned long>, "");
@@ -108,12 +112,13 @@ int main()
     static_assert( cuda::std::is_invocable_v<L, __uint128_t>, "");
     static_assert(!cuda::std::is_invocable_v<L,  __int128_t>, "");
 #endif
- 
+
     static_assert(!cuda::std::is_invocable_v<L, A>, "");
     static_assert(!cuda::std::is_invocable_v<L, E1>, "");
     static_assert(!cuda::std::is_invocable_v<L, E2>, "");
+#endif // defined(CPP17_PERFORM_INVOCABLE_TEST)
     }
-    
+
     static_assert(constexpr_test<unsigned char>(),      "");
     static_assert(constexpr_test<unsigned short>(),     "");
     static_assert(constexpr_test<unsigned>(),           "");
@@ -164,4 +169,5 @@ int main()
     }
 #endif
 
+  return 0;
 }

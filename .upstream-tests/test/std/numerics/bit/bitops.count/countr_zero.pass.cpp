@@ -6,7 +6,7 @@
 // Source Licenses. See LICENSE.TXT for details.
 //
 //===----------------------------------------------------------------------===//
-// UNSUPPORTED: c++98, c++03, c++11, c++14, c++17 
+// UNSUPPORTED: c++98, c++03
 
 // template <class T>
 //   constexpr int countr_zero(T x) noexcept;
@@ -14,7 +14,7 @@
 // Returns: The number of consecutive 0 bits, starting from the most significant bit.
 //   [ Note: Returns N if x == 0. ]
 //
-// Remarks: This function shall not participate in overload resolution unless 
+// Remarks: This function shall not participate in overload resolution unless
 //	T is an unsigned integer type
 
 #include <cuda/std/bit>
@@ -22,6 +22,7 @@
 #include <cuda/std/type_traits>
 #include <cuda/std/cassert>
 
+#include "../bit_backport_helpers.h"
 #include "test_macros.h"
 
 class A{};
@@ -29,10 +30,9 @@ enum       E1 : unsigned char { rEd };
 enum class E2 : unsigned char { red };
 
 template <typename T>
-constexpr bool constexpr_test()
+__host__ __device__ constexpr bool constexpr_test()
 {
-	const int dig = cuda::std::numeric_limits<T>::digits;
-	return cuda::std::countr_zero(T(0)) == dig
+	return cuda::std::countr_zero(T(0)) == cuda::std::numeric_limits<T>::digits
 	   &&  cuda::std::countr_zero(T(1)) == 0
 	   &&  cuda::std::countr_zero(T(2)) == 1
 	   &&  cuda::std::countr_zero(T(3)) == 0
@@ -48,11 +48,11 @@ constexpr bool constexpr_test()
 
 
 template <typename T>
-void runtime_test()
+__host__ __device__ void runtime_test()
 {
 	ASSERT_SAME_TYPE(int, decltype(cuda::std::countr_zero(T(0))));
 	ASSERT_NOEXCEPT(               cuda::std::countr_zero(T(0)));
-	
+
 	assert( cuda::std::countr_zero(T(121)) == 0);
 	assert( cuda::std::countr_zero(T(122)) == 1);
 	assert( cuda::std::countr_zero(T(123)) == 0);
@@ -65,13 +65,15 @@ void runtime_test()
 	assert( cuda::std::countr_zero(T(130)) == 1);
 }
 
-int main()
+int main(int, char **)
 {
-	
+
     {
+#if defined(CPP17_PERFORM_INVOCABLE_TEST)
     auto lambda = [](auto x) -> decltype(cuda::std::countr_zero(x)) {};
     using L = decltype(lambda);
-    
+    unused(lambda);
+
     static_assert( cuda::std::is_invocable_v<L, unsigned char>, "");
     static_assert( cuda::std::is_invocable_v<L, unsigned int>, "");
     static_assert( cuda::std::is_invocable_v<L, unsigned long>, "");
@@ -107,10 +109,11 @@ int main()
     static_assert( cuda::std::is_invocable_v<L, __uint128_t>, "");
     static_assert(!cuda::std::is_invocable_v<L, __int128_t>, "");
 #endif
- 
+
     static_assert(!cuda::std::is_invocable_v<L, A>, "");
     static_assert(!cuda::std::is_invocable_v<L, E1>, "");
     static_assert(!cuda::std::is_invocable_v<L, E2>, "");
+#endif // defined(CPP17_PERFORM_INVOCABLE_TEST)
     }
 
 	static_assert(constexpr_test<unsigned char>(),      "");
@@ -166,4 +169,5 @@ int main()
 	}
 #endif
 
+	return 0;
 }
