@@ -52,6 +52,7 @@ namespace std {
 } // namespace std
 
 */
+
 #ifndef __cuda_std__
 
 #include <__config>
@@ -59,6 +60,13 @@ namespace std {
 #include <type_traits>
 #include <version>
 #include <__debug>
+
+#if defined(_LIBCUDACXX_USE_PRAGMA_GCC_SYSTEM_HEADER)
+#pragma GCC system_header
+#endif
+
+_LIBCUDACXX_PUSH_MACROS
+#include <__undef_macros>
 
 #endif // __cuda_std__
 
@@ -68,13 +76,6 @@ namespace std {
 #if defined(_LIBCUDACXX_COMPILER_MSVC)
 #include <intrin.h>
 #endif
-
-#if defined(_LIBCUDACXX_USE_PRAGMA_GCC_SYSTEM_HEADER)
-#pragma GCC system_header
-#endif
-
-_LIBCUDACXX_PUSH_MACROS
-#include <__undef_macros>
 
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
@@ -208,26 +209,28 @@ using __bitop_unsigned_integer _LIBCUDACXX_NODEBUG_TYPE = integral_constant<bool
 
 
 template<class _Tp>
-_LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR_AFTER_CXX11
+_LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR
 _Tp __rotl(_Tp __t, unsigned int __cnt) _NOEXCEPT
 {
     static_assert(__bitop_unsigned_integer<_Tp>::value, "__rotl requires unsigned");
-    const unsigned int __dig = numeric_limits<_Tp>::digits;
-    if ((__cnt % __dig) == 0)
-        return __t;
-    return (__t << (__cnt % __dig)) | (__t >> (__dig - (__cnt % __dig)));
+    using __nlt = numeric_limits<_Tp>;
+
+    return ((__cnt % __nlt::digits) == 0) ?
+      __t :
+      (__t << (__cnt % __nlt::digits)) | (__t >> (__nlt::digits - (__cnt % __nlt::digits)));
 }
 
 
 template<class _Tp>
-_LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR_AFTER_CXX11
+_LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR
 _Tp __rotr(_Tp __t, unsigned int __cnt) _NOEXCEPT
 {
     static_assert(__bitop_unsigned_integer<_Tp>::value, "__rotr requires unsigned");
-    const unsigned int __dig = numeric_limits<_Tp>::digits;
-    if ((__cnt % __dig) == 0)
-        return __t;
-    return (__t >> (__cnt % __dig)) | (__t << (__dig - (__cnt % __dig)));
+    using __nlt = numeric_limits<_Tp>;
+
+    return ((__cnt % __nlt::digits) == 0) ?
+        __t :
+        (__t >> (__cnt % __nlt::digits)) | (__t << (__nlt::digits - (__cnt % __nlt::digits)));
 }
 
 
@@ -313,29 +316,44 @@ int __countr_one(_Tp __t) _NOEXCEPT
         : numeric_limits<_Tp>::digits;
 }
 
+template<class _Tp>
+_LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR
+_EnableIf<sizeof(_Tp) <= sizeof(unsigned int), int> __popcount_dispatch(_Tp __t) _NOEXCEPT
+{ return __libcpp_popcount(static_cast<unsigned int>(__t)); }
 
 template<class _Tp>
-_LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR_AFTER_CXX11
-int
-__popcount(_Tp __t) _NOEXCEPT
+_LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR
+_EnableIf<sizeof(_Tp) == sizeof(unsigned long long), int> __popcount_dispatch(_Tp __t) _NOEXCEPT
+{ return __libcpp_popcount(static_cast<unsigned long long>(__t)); }
+
+template <typename _Tp, int _St = sizeof(_Tp)/sizeof(unsigned long long)>
+struct __popcount_rsh_impl {
+    static constexpr int __count(_Tp __t) {
+        return __popcount_rsh_impl<_Tp, _St-1>::__count(
+                    __t >> numeric_limits<unsigned long long>::digits) +
+               __libcpp_popcount(static_cast<unsigned long long>(__t));
+    }
+};
+
+template <typename _Tp>
+struct __popcount_rsh_impl<_Tp, 0> {
+    static constexpr int __count(_Tp __t) {
+        return __libcpp_popcount(static_cast<unsigned long long>(__t));
+    }
+};
+
+template<class _Tp>
+_LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR
+_EnableIf<(sizeof(_Tp) > sizeof(unsigned long long)), int> __popcount_dispatch(_Tp __t) _NOEXCEPT
+{ return __popcount_rsh_impl<_Tp>::__count(__t); }
+
+template<class _Tp>
+_LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR
+int __popcount(_Tp __t) _NOEXCEPT
 {
     static_assert(__bitop_unsigned_integer<_Tp>::value, "__libcpp_popcount requires unsigned");
-    if      (sizeof(_Tp) <= sizeof(unsigned int))
-        return __libcpp_popcount(static_cast<unsigned int>(__t));
-    else if (sizeof(_Tp) <= sizeof(unsigned long))
-        return __libcpp_popcount(static_cast<unsigned long>(__t));
-    else if (sizeof(_Tp) <= sizeof(unsigned long long))
-        return __libcpp_popcount(static_cast<unsigned long long>(__t));
-    else
-    {
-        int __ret = 0;
-        while (__t != 0)
-        {
-            __ret += __libcpp_popcount(static_cast<unsigned long long>(__t));
-            __t >>= numeric_limits<unsigned long long>::digits;
-        }
-        return __ret;
-    }
+
+    return __popcount_dispatch(__t);
 }
 
 
@@ -356,12 +374,37 @@ bool __ispow2(_Tp __t) _NOEXCEPT
 	return __t != 0 && (((__t & (__t - 1)) == 0));
 }
 
+template <class _Tp>
+_LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR_AFTER_CXX11
+_EnableIf<sizeof(_Tp) >= sizeof(unsigned), _Tp>
+__ceil2(_Tp __t) noexcept
+{
+    // const unsigned __n = numeric_limits<_Tp>::digits - countl_zero((_Tp)(__t - 1u));
+    // _LIBCUDACXX_DEBUG_ASSERT(__libcpp_is_constant_evaluated() || __n != numeric_limits<_Tp>::digits, "Bad input to ceil2");
+    return _Tp{1} << (numeric_limits<_Tp>::digits - countl_zero((_Tp)(__t - 1u)));
+}
 
-#if (_LIBCUDACXX_STD_VER > 17) || (_LIBCUDACXX_ENABLE_BIT_BACKPORT)
+template <class _Tp>
+_LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR_AFTER_CXX11
+_EnableIf<sizeof(_Tp) < sizeof(unsigned), _Tp>
+__ceil2(_Tp __t) noexcept
+{
+    // const unsigned __n = numeric_limits<_Tp>::digits - countl_zero((_Tp)(__t - 1u));
+    // _LIBCUDACXX_DEBUG_ASSERT(__libcpp_is_constant_evaluated() || __n != numeric_limits<_Tp>::digits, "Bad input to ceil2");
+
+    // const unsigned __extra = numeric_limits<unsigned>::digits  - numeric_limits<_Tp>::digits;
+    // const unsigned __retVal = 1u << (__n + __extra);
+    return (_Tp)
+        ((1u << ((numeric_limits<_Tp>::digits - countl_zero((_Tp)(__t - 1u))) + (numeric_limits<unsigned>::digits  - numeric_limits<_Tp>::digits))) >>
+        (numeric_limits<unsigned>::digits  - numeric_limits<_Tp>::digits));
+}
+
+
+#if (_LIBCUDACXX_STD_VER > 17) || defined(_LIBCUDACXX_ENABLE_BIT_BACKPORT)
 
 template<class _Tp>
 _LIBCUDACXX_INLINE_VISIBILITY constexpr
-enable_if_t<__bitop_unsigned_integer<_Tp>::value, _Tp>
+_EnableIf<__bitop_unsigned_integer<_Tp>::value, _Tp>
 rotl(_Tp __t, unsigned int __cnt) noexcept
 {
     return __rotl(__t, __cnt);
@@ -371,7 +414,7 @@ rotl(_Tp __t, unsigned int __cnt) noexcept
 // rotr
 template<class _Tp>
 _LIBCUDACXX_INLINE_VISIBILITY constexpr
-enable_if_t<__bitop_unsigned_integer<_Tp>::value, _Tp>
+_EnableIf<__bitop_unsigned_integer<_Tp>::value, _Tp>
 rotr(_Tp __t, unsigned int __cnt) noexcept
 {
     return __rotr(__t, __cnt);
@@ -380,7 +423,7 @@ rotr(_Tp __t, unsigned int __cnt) noexcept
 
 template<class _Tp>
 _LIBCUDACXX_INLINE_VISIBILITY constexpr
-enable_if_t<__bitop_unsigned_integer<_Tp>::value, int>
+_EnableIf<__bitop_unsigned_integer<_Tp>::value, int>
 countl_zero(_Tp __t) noexcept
 {
     return __countl_zero(__t);
@@ -389,7 +432,7 @@ countl_zero(_Tp __t) noexcept
 
 template<class _Tp>
 _LIBCUDACXX_INLINE_VISIBILITY constexpr
-enable_if_t<__bitop_unsigned_integer<_Tp>::value, int>
+_EnableIf<__bitop_unsigned_integer<_Tp>::value, int>
 countl_one(_Tp __t) noexcept
 {
     return __countl_one(__t);
@@ -398,7 +441,7 @@ countl_one(_Tp __t) noexcept
 
 template<class _Tp>
 _LIBCUDACXX_INLINE_VISIBILITY constexpr
-enable_if_t<__bitop_unsigned_integer<_Tp>::value, int>
+_EnableIf<__bitop_unsigned_integer<_Tp>::value, int>
 countr_zero(_Tp __t) noexcept
 {
 	return __countr_zero(__t);
@@ -407,7 +450,7 @@ countr_zero(_Tp __t) noexcept
 
 template<class _Tp>
 _LIBCUDACXX_INLINE_VISIBILITY constexpr
-enable_if_t<__bitop_unsigned_integer<_Tp>::value, int>
+_EnableIf<__bitop_unsigned_integer<_Tp>::value, int>
 countr_one(_Tp __t) noexcept
 {
     return __countr_one(__t);
@@ -416,7 +459,7 @@ countr_one(_Tp __t) noexcept
 
 template<class _Tp>
 _LIBCUDACXX_INLINE_VISIBILITY constexpr
-enable_if_t<__bitop_unsigned_integer<_Tp>::value, int>
+_EnableIf<__bitop_unsigned_integer<_Tp>::value, int>
 popcount(_Tp __t) noexcept
 {
     return __popcount(__t);
@@ -425,7 +468,7 @@ popcount(_Tp __t) noexcept
 
 template <class _Tp>
 _LIBCUDACXX_INLINE_VISIBILITY constexpr
-enable_if_t<__bitop_unsigned_integer<_Tp>::value, bool>
+_EnableIf<__bitop_unsigned_integer<_Tp>::value, bool>
 ispow2(_Tp __t) noexcept
 {
     return __ispow2(__t);
@@ -433,34 +476,23 @@ ispow2(_Tp __t) noexcept
 
 template <class _Tp>
 _LIBCUDACXX_INLINE_VISIBILITY constexpr
-enable_if_t<__bitop_unsigned_integer<_Tp>::value, _Tp>
+_EnableIf<__bitop_unsigned_integer<_Tp>::value, _Tp>
 floor2(_Tp __t) noexcept
 {
     return __t == 0 ? 0 : _Tp{1} << __bit_log2(__t);
 }
 
 template <class _Tp>
-_LIBCUDACXX_INLINE_VISIBILITY constexpr
-enable_if_t<__bitop_unsigned_integer<_Tp>::value, _Tp>
+_LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR_AFTER_CXX11
+_EnableIf<__bitop_unsigned_integer<_Tp>::value, _Tp>
 ceil2(_Tp __t) noexcept
 {
-    if (__t < 2) return 1;
-    const unsigned __n = numeric_limits<_Tp>::digits - countl_zero((_Tp)(__t - 1u));
-    _LIBCUDACXX_DEBUG_ASSERT(__libcpp_is_constant_evaluated() || __n != numeric_limits<_Tp>::digits, "Bad input to ceil2");
-
-    if constexpr (sizeof(_Tp) >= sizeof(unsigned))
-        return _Tp{1} << __n;
-    else
-    {
-        const unsigned __extra = numeric_limits<unsigned>::digits  - numeric_limits<_Tp>::digits;
-        const unsigned __retVal = 1u << (__n + __extra);
-        return (_Tp) (__retVal >> __extra);
-    }
+    return (__t < 2) ? 1 : __ceil2(__t);
 }
 
 template <class _Tp>
 _LIBCUDACXX_INLINE_VISIBILITY constexpr
-enable_if_t<__bitop_unsigned_integer<_Tp>::value, _Tp>
+_EnableIf<__bitop_unsigned_integer<_Tp>::value, _Tp>
 log2p1(_Tp __t) noexcept
 {
     return __t == 0 ? 0 : __bit_log2(__t) + 1;
