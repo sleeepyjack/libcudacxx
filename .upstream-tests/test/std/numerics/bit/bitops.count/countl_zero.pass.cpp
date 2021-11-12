@@ -31,17 +31,16 @@ enum class E2 : unsigned char { red };
 template <typename T>
 constexpr bool constexpr_test()
 {
-	const int dig = cuda::std::numeric_limits<T>::digits;
-	return cuda::std::countl_zero(T(0)) == dig
-	   &&  cuda::std::countl_zero(T(1)) == dig - 1
-	   &&  cuda::std::countl_zero(T(2)) == dig - 2
-	   &&  cuda::std::countl_zero(T(3)) == dig - 2
-	   &&  cuda::std::countl_zero(T(4)) == dig - 3
-	   &&  cuda::std::countl_zero(T(5)) == dig - 3
-	   &&  cuda::std::countl_zero(T(6)) == dig - 3
-	   &&  cuda::std::countl_zero(T(7)) == dig - 3
-	   &&  cuda::std::countl_zero(T(8)) == dig - 4
-	   &&  cuda::std::countl_zero(T(9)) == dig - 4
+	return cuda::std::countl_zero(T(0)) == cuda::std::numeric_limits<T>::digits
+	   &&  cuda::std::countl_zero(T(1)) == cuda::std::numeric_limits<T>::digits - 1
+	   &&  cuda::std::countl_zero(T(2)) == cuda::std::numeric_limits<T>::digits - 2
+	   &&  cuda::std::countl_zero(T(3)) == cuda::std::numeric_limits<T>::digits - 2
+	   &&  cuda::std::countl_zero(T(4)) == cuda::std::numeric_limits<T>::digits - 3
+	   &&  cuda::std::countl_zero(T(5)) == cuda::std::numeric_limits<T>::digits - 3
+	   &&  cuda::std::countl_zero(T(6)) == cuda::std::numeric_limits<T>::digits - 3
+	   &&  cuda::std::countl_zero(T(7)) == cuda::std::numeric_limits<T>::digits - 3
+	   &&  cuda::std::countl_zero(T(8)) == cuda::std::numeric_limits<T>::digits - 4
+	   &&  cuda::std::countl_zero(T(9)) == cuda::std::numeric_limits<T>::digits - 4
 	   &&  cuda::std::countl_zero(cuda::std::numeric_limits<T>::max()) == 0
 	  ;
 }
@@ -68,53 +67,7 @@ void runtime_test()
 
 int main(int, char **)
 {
-
-    {
-    auto lambda = [](auto x) -> decltype(cuda::std::countl_zero(x)) {};
-    using L = decltype(lambda);
-
-    static_assert( cuda::std::is_invocable_v<L, unsigned char>, "");
-    static_assert( cuda::std::is_invocable_v<L, unsigned int>, "");
-    static_assert( cuda::std::is_invocable_v<L, unsigned long>, "");
-    static_assert( cuda::std::is_invocable_v<L, unsigned long long>, "");
-
-    static_assert( cuda::std::is_invocable_v<L, uint8_t>, "");
-    static_assert( cuda::std::is_invocable_v<L, uint16_t>, "");
-    static_assert( cuda::std::is_invocable_v<L, uint32_t>, "");
-    static_assert( cuda::std::is_invocable_v<L, uint64_t>, "");
-    static_assert( cuda::std::is_invocable_v<L, size_t>, "");
-
-    static_assert( cuda::std::is_invocable_v<L, uintmax_t>, "");
-    static_assert( cuda::std::is_invocable_v<L, uintptr_t>, "");
-
-
-    static_assert(!cuda::std::is_invocable_v<L, int>, "");
-    static_assert(!cuda::std::is_invocable_v<L, signed int>, "");
-    static_assert(!cuda::std::is_invocable_v<L, long>, "");
-    static_assert(!cuda::std::is_invocable_v<L, long long>, "");
-
-    static_assert(!cuda::std::is_invocable_v<L, int8_t>, "");
-    static_assert(!cuda::std::is_invocable_v<L, int16_t>, "");
-    static_assert(!cuda::std::is_invocable_v<L, int32_t>, "");
-    static_assert(!cuda::std::is_invocable_v<L, int64_t>, "");
-    static_assert(!cuda::std::is_invocable_v<L, ptrdiff_t>, "");
-
-    static_assert(!cuda::std::is_invocable_v<L, bool>, "");
-    static_assert(!cuda::std::is_invocable_v<L, signed char>, "");
-    static_assert(!cuda::std::is_invocable_v<L, char16_t>, "");
-    static_assert(!cuda::std::is_invocable_v<L, char32_t>, "");
-
-#ifndef _LIBCUDACXX_HAS_NO_INT128
-    static_assert( cuda::std::is_invocable_v<L, __uint128_t>, "");
-    static_assert(!cuda::std::is_invocable_v<L, __int128_t>, "");
-#endif
-
-    static_assert(!cuda::std::is_invocable_v<L, A>, "");
-    static_assert(!cuda::std::is_invocable_v<L, E1>, "");
-    static_assert(!cuda::std::is_invocable_v<L, E2>, "");
-    }
-
-	static_assert(constexpr_test<unsigned char>(),      "");
+  static_assert(constexpr_test<unsigned char>(),      "");
 	static_assert(constexpr_test<unsigned short>(),     "");
 	static_assert(constexpr_test<unsigned>(),           "");
 	static_assert(constexpr_test<unsigned long>(),      "");
@@ -169,4 +122,5 @@ int main(int, char **)
 	}
 #endif
 
+	return 0;
 }
