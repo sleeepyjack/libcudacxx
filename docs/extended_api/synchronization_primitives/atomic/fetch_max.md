@@ -27,7 +27,7 @@ __global__ void example_kernel() {
   cuda::atomic<int> a(0);
   auto x = a.fetch_max(1); // Operates as if unsigned.
   auto y = a.load();
-  assert(x == 1 && y == 0);
+  assert(x == 0 && y == 1);
 }
 ```
 
