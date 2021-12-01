@@ -26,7 +26,7 @@ enum       E1 : unsigned char { rEd };
 enum class E2 : unsigned char { red };
 
 template <typename T>
-constexpr bool toobig()
+__host__ __device__ constexpr bool toobig()
 {
 	return 0 == cuda::std::ceil2(cuda::std::numeric_limits<T>::max());
 }

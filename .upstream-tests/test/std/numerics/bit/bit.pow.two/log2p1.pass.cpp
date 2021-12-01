@@ -27,7 +27,7 @@ enum       E1 : unsigned char { rEd };
 enum class E2 : unsigned char { red };
 
 template <typename T>
-constexpr bool constexpr_test()
+__host__ __device__ constexpr bool constexpr_test()
 {
 	return cuda::std::log2p1(T(0)) == T(0)
 	   &&  cuda::std::log2p1(T(1)) == T(1)
@@ -44,7 +44,7 @@ constexpr bool constexpr_test()
 
 
 template <typename T>
-void runtime_test()
+__host__ __device__ void runtime_test()
 {
 	ASSERT_SAME_TYPE(T, decltype(cuda::std::log2p1(T(0))));
 	ASSERT_NOEXCEPT(             cuda::std::log2p1(T(0)));

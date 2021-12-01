@@ -29,7 +29,7 @@ enum       E1 : unsigned char { rEd };
 enum class E2 : unsigned char { red };
 
 template <typename T>
-constexpr bool constexpr_test()
+__host__ __device__ constexpr bool constexpr_test()
 {
 	return cuda::std::countr_one(T(0)) == 0
 	   &&  cuda::std::countr_one(T(1)) == 1
@@ -47,7 +47,7 @@ constexpr bool constexpr_test()
 
 
 template <typename T>
-void runtime_test()
+__host__ __device__ void runtime_test()
 {
 	ASSERT_SAME_TYPE(int, decltype(cuda::std::countr_one(T(0))));
 	ASSERT_NOEXCEPT(               cuda::std::countr_one(T(0)));

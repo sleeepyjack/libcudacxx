@@ -29,7 +29,7 @@ enum       E1 : unsigned char { rEd };
 enum class E2 : unsigned char { red };
 
 template <typename T>
-constexpr bool constexpr_test()
+__host__ __device__ constexpr bool constexpr_test()
 {
 	using nl = cuda::std::numeric_limits<T>;
 	return cuda::std::countl_one(nl::max()) == nl::digits
@@ -47,7 +47,7 @@ constexpr bool constexpr_test()
 
 
 template <typename T>
-void runtime_test()
+__host__ __device__ void runtime_test()
 {
 	ASSERT_SAME_TYPE(int, decltype(cuda::std::countl_one(T(0))));
 	ASSERT_NOEXCEPT(               cuda::std::countl_one(T(0)));

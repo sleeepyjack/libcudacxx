@@ -28,7 +28,7 @@ enum       E1 : unsigned char { rEd };
 enum class E2 : unsigned char { red };
 
 template <typename T>
-constexpr bool constexpr_test()
+__host__ __device__ constexpr bool constexpr_test()
 {
     return cuda::std::ceil2(T(0)) == T(1)
        &&  cuda::std::ceil2(T(1)) == T(1)
@@ -45,7 +45,7 @@ constexpr bool constexpr_test()
 
 
 template <typename T>
-void runtime_test()
+__host__ __device__ void runtime_test()
 {
     ASSERT_SAME_TYPE(T, decltype(cuda::std::ceil2(T(0))));
     LIBCPP_ASSERT_NOEXCEPT(      cuda::std::ceil2(T(0)));
