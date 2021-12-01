@@ -47,4 +47,6 @@ int main(int, char **)
 	static_assert(toobig<size_t>(), ""); 	// expected-error {{static_assert expression is not an integral constant expression}}
 	static_assert(toobig<uintmax_t>(), "");	// expected-error {{static_assert expression is not an integral constant expression}}
 	static_assert(toobig<uintptr_t>(), "");	// expected-error {{static_assert expression is not an integral constant expression}}
+
+	return 0;
 }

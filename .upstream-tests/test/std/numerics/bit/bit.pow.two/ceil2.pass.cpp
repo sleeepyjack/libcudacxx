@@ -99,4 +99,6 @@ int main(int, char **)
 #ifndef _LIBCUDACXX_HAS_NO_INT128
     runtime_test<__uint128_t>();
 #endif
+
+	return 0;
 }
