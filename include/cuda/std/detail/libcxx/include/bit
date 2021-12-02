@@ -233,8 +233,6 @@ _Tp __rotr(_Tp __t, unsigned int __cnt) _NOEXCEPT
         (__t >> (__cnt % __nlt::digits)) | (__t << (__nlt::digits - (__cnt % __nlt::digits)));
 }
 
-
-
 template<class _Tp>
 _LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR_AFTER_CXX11
 int __countr_zero(_Tp __t) _NOEXCEPT
@@ -263,36 +261,65 @@ int __countr_zero(_Tp __t) _NOEXCEPT
     }
 }
 
+// Forward decl for recursive use in split int128 operations
 template<class _Tp>
-_LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR_AFTER_CXX11
+_LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR
+int __countl_zero(_Tp __t) _NOEXCEPT;
+
+template<class _Tp>
+_LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR
+_EnableIf<sizeof(_Tp) <= sizeof(unsigned int), int> __countl_zero_dispatch(_Tp __t) _NOEXCEPT
+{
+  return __libcpp_clz(static_cast<unsigned int>(__t))
+              - (numeric_limits<unsigned int>::digits - numeric_limits<_Tp>::digits);
+}
+
+template<class _Tp>
+_LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR
+_EnableIf<sizeof(_Tp) == sizeof(unsigned long long), int> __countl_zero_dispatch(_Tp __t) _NOEXCEPT
+{
+  return __libcpp_clz(static_cast<unsigned long long>(__t))
+              - (numeric_limits<unsigned long long>::digits - numeric_limits<_Tp>::digits);
+}
+
+template <typename _Tp, int _St = sizeof(_Tp)/sizeof(unsigned long long)>
+struct __countl_zero_rsh_impl {
+    static _LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR
+    int __short_circuit(_Tp __t, int __cur, int __count) {
+      // We stop processing early if __cur is empty
+      return (__cur != numeric_limits<unsigned long long>::digits) ?
+            __cur + __count :
+            __countl_zero_rsh_impl<_Tp, _St-1>::__count(__t, __cur + __count);
+    }
+
+    static _LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR
+    int __count(_Tp __t, int __c) {
+        return __short_circuit(
+            __t >> numeric_limits<unsigned long long>::digits,
+            __countl_zero(static_cast<unsigned long long>(__t)),
+            __c);
+    }
+};
+
+template <typename _Tp>
+struct __countl_zero_rsh_impl<_Tp, 0> {
+    static _LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR
+    int __count(_Tp __t, int __c) {
+        return __c + __countl_zero(static_cast<unsigned long long>(__t));
+    }
+};
+
+template<class _Tp>
+_LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR
+_EnableIf<(sizeof(_Tp) > sizeof(unsigned long long)), int> __countl_zero_dispatch(_Tp __t) _NOEXCEPT
+{ return __countl_zero_rsh_impl<_Tp>::__count(__t, 0); }
+
+template<class _Tp>
+_LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR
 int __countl_zero(_Tp __t) _NOEXCEPT
 {
     static_assert(__bitop_unsigned_integer<_Tp>::value, "__countl_zero requires unsigned");
-    if (__t == 0)
-        return numeric_limits<_Tp>::digits;
-
-    if      (sizeof(_Tp) <= sizeof(unsigned int))
-        return __libcpp_clz(static_cast<unsigned int>(__t))
-              - (numeric_limits<unsigned int>::digits - numeric_limits<_Tp>::digits);
-    else if (sizeof(_Tp) <= sizeof(unsigned long))
-        return __libcpp_clz(static_cast<unsigned long>(__t))
-              - (numeric_limits<unsigned long>::digits - numeric_limits<_Tp>::digits);
-    else if (sizeof(_Tp) <= sizeof(unsigned long long))
-        return __libcpp_clz(static_cast<unsigned long long>(__t))
-              - (numeric_limits<unsigned long long>::digits - numeric_limits<_Tp>::digits);
-    else
-    {
-        int __ret = 0;
-        int __iter = 0;
-        const unsigned int __ulldigits = numeric_limits<unsigned long long>::digits;
-        while (true) {
-            __t = __rotr(__t, __ulldigits);
-            if ((__iter = __countl_zero(static_cast<unsigned long long>(__t))) != __ulldigits)
-                break;
-            __ret += __iter;
-            }
-        return __ret + __iter;
-    }
+    return __t ? __countl_zero_dispatch(__t) : numeric_limits<_Tp>::digits;
 }
 
 template<class _Tp>
@@ -328,7 +355,8 @@ _EnableIf<sizeof(_Tp) == sizeof(unsigned long long), int> __popcount_dispatch(_T
 
 template <typename _Tp, int _St = sizeof(_Tp)/sizeof(unsigned long long)>
 struct __popcount_rsh_impl {
-    static constexpr int __count(_Tp __t) {
+    static _LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR
+    int __count(_Tp __t) {
         return __popcount_rsh_impl<_Tp, _St-1>::__count(
                     __t >> numeric_limits<unsigned long long>::digits) +
                __libcpp_popcount(static_cast<unsigned long long>(__t));
@@ -337,7 +365,8 @@ struct __popcount_rsh_impl {
 
 template <typename _Tp>
 struct __popcount_rsh_impl<_Tp, 0> {
-    static constexpr int __count(_Tp __t) {
+    static _LIBCUDACXX_INLINE_VISIBILITY _LIBCUDACXX_CONSTEXPR
+    int __count(_Tp __t) {
         return __libcpp_popcount(static_cast<unsigned long long>(__t));
     }
 };
