@@ -31,18 +31,19 @@ enum class E2 : unsigned char { red };
 template <typename T>
 __host__ __device__ constexpr bool constexpr_test()
 {
-	return cuda::std::countl_zero(T(0)) == cuda::std::numeric_limits<T>::digits
-	   &&  cuda::std::countl_zero(T(1)) == cuda::std::numeric_limits<T>::digits - 1
-	   &&  cuda::std::countl_zero(T(2)) == cuda::std::numeric_limits<T>::digits - 2
-	   &&  cuda::std::countl_zero(T(3)) == cuda::std::numeric_limits<T>::digits - 2
-	   &&  cuda::std::countl_zero(T(4)) == cuda::std::numeric_limits<T>::digits - 3
-	   &&  cuda::std::countl_zero(T(5)) == cuda::std::numeric_limits<T>::digits - 3
-	   &&  cuda::std::countl_zero(T(6)) == cuda::std::numeric_limits<T>::digits - 3
-	   &&  cuda::std::countl_zero(T(7)) == cuda::std::numeric_limits<T>::digits - 3
-	   &&  cuda::std::countl_zero(T(8)) == cuda::std::numeric_limits<T>::digits - 4
-	   &&  cuda::std::countl_zero(T(9)) == cuda::std::numeric_limits<T>::digits - 4
-	   &&  cuda::std::countl_zero(cuda::std::numeric_limits<T>::max()) == 0
-	  ;
+	static_assert(cuda::std::countl_zero(T(0)) == cuda::std::numeric_limits<T>::digits);
+	static_assert(cuda::std::countl_zero(T(1)) == cuda::std::numeric_limits<T>::digits - 1);
+	static_assert(cuda::std::countl_zero(T(2)) == cuda::std::numeric_limits<T>::digits - 2);
+	static_assert(cuda::std::countl_zero(T(3)) == cuda::std::numeric_limits<T>::digits - 2);
+	static_assert(cuda::std::countl_zero(T(4)) == cuda::std::numeric_limits<T>::digits - 3);
+	static_assert(cuda::std::countl_zero(T(5)) == cuda::std::numeric_limits<T>::digits - 3);
+	static_assert(cuda::std::countl_zero(T(6)) == cuda::std::numeric_limits<T>::digits - 3);
+	static_assert(cuda::std::countl_zero(T(7)) == cuda::std::numeric_limits<T>::digits - 3);
+	static_assert(cuda::std::countl_zero(T(8)) == cuda::std::numeric_limits<T>::digits - 4);
+	static_assert(cuda::std::countl_zero(T(9)) == cuda::std::numeric_limits<T>::digits - 4);
+	static_assert(cuda::std::countl_zero(cuda::std::numeric_limits<T>::max()) == 0);
+
+	return true;
 }
 
 
@@ -67,6 +68,7 @@ __host__ __device__ void runtime_test()
 
 int main(int, char **)
 {
+#if !defined(__CUDA_ARCH__)
   static_assert(constexpr_test<unsigned char>(),      "");
 	static_assert(constexpr_test<unsigned short>(),     "");
 	static_assert(constexpr_test<unsigned>(),           "");
@@ -83,6 +85,7 @@ int main(int, char **)
 
 #ifndef _LIBCUDACXX_HAS_NO_INT128
 	static_assert(constexpr_test<__uint128_t>(),        "");
+#endif
 #endif
 
 

@@ -12,7 +12,7 @@
 // <cuda/std/bit>
 
 #include <cuda/std/bit>
-#include <cuda/std/cstring>
+// #include <cuda/std/cstring>
 #include <cuda/std/cassert>
 #include <cuda/std/cstdint>
 
@@ -40,7 +40,7 @@ int main(int, char**) {
     uint32_t i = 0x01020304;
     char c[4];
     static_assert(sizeof(i) == sizeof(c));
-    cuda::std::memcpy(c, &i, sizeof(c));
+    memcpy(c, &i, sizeof(c));
 
     assert ((c[0] == 1) == (cuda::std::endian::native == cuda::std::endian::big));
     }
