@@ -15,4 +15,6 @@ The latest ABI version is always the default.
 | 1.2.0       | 3, 2            | CUDA 11.1              | Pipelines, asynchronous copies        |
 | 1.3.0       | 3, 2            | CUDA 11.2              | Tuples, pairs                         |
 | 1.4.0       | 3, 2            |                        | Complex numbers, calendars, dates     |
-
+| 1.4.1       | 3, 2            | CUDA 11.3              |                                       |
+| 1.5.0       | 3, 2            | CUDA 11.4              | <nv/target>                           |
+| 1.6.0       | 4, 3, 2         | CUDA 11.5              | Annotated Pointer, ABI breaks         |
