@@ -22,7 +22,7 @@
 #include <utility>
 #include <cstddef>
 #include <cstdlib>
-#include <cassert>
+#include <cuda/std/cassert>
 #include <string_view>
 #include <sstream>
 #include <iostream>

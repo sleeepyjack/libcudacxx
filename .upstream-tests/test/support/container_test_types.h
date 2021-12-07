@@ -85,7 +85,7 @@
  */
 
 #include <functional>
-#include <cassert>
+#include <cuda/std/cassert>
 
 #include "test_macros.h"
 
