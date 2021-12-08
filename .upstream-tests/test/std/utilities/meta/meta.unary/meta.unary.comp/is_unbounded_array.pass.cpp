@@ -44,6 +44,7 @@ union Union {};
 
 class Abstract
 {
+    __host__ __device__
     virtual ~Abstract() = 0;
 };
 
@@ -65,7 +66,7 @@ int main(int, char**)
     test_array<Abstract,       false>();
     test_array<Enum,           false>();
     test_array<FunctionPtr,    false>();
-    
+
 //  Array types
     test_array<array,             false>();
     test_array<incomplete_array,  true>();

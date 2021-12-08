@@ -44,6 +44,7 @@ union Union {};
 
 class Abstract
 {
+    __host__ __device__
     virtual ~Abstract() = 0;
 };
 

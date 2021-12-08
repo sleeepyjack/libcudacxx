@@ -38,8 +38,8 @@ int main(int, char**)
     ASSERT_NOEXCEPT(++(cuda::std::declval<weekday&>())  );
     ASSERT_NOEXCEPT(  (cuda::std::declval<weekday&>())++);
 
-    ASSERT_SAME_TYPE(weekday , decltype(  std::declval<weekday&>()++));
-    ASSERT_SAME_TYPE(weekday&, decltype(++std::declval<weekday&>()  ));
+    ASSERT_SAME_TYPE(weekday , decltype(  cuda::std::declval<weekday&>()++));
+    ASSERT_SAME_TYPE(weekday&, decltype(++cuda::std::declval<weekday&>()  ));
 
     static_assert(testConstexpr<weekday>(), "");
 

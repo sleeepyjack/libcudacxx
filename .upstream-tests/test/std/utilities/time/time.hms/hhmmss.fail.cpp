@@ -7,6 +7,7 @@
 //===----------------------------------------------------------------------===//
 // UNSUPPORTED: c++98, c++03, c++11
 // UNSUPPORTED: apple-clang-9
+// UNSUPPORTED: nvrtc
 // <chrono>
 
 // template <class Duration> class hh_mm_ss;

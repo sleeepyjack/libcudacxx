@@ -38,8 +38,8 @@ int main(int, char**)
     ASSERT_NOEXCEPT(--(cuda::std::declval<month&>())  );
     ASSERT_NOEXCEPT(  (cuda::std::declval<month&>())--);
 
-    ASSERT_SAME_TYPE(month , decltype(  std::declval<month&>()--));
-    ASSERT_SAME_TYPE(month&, decltype(--std::declval<month&>()  ));
+    ASSERT_SAME_TYPE(month , decltype(  cuda::std::declval<month&>()--));
+    ASSERT_SAME_TYPE(month&, decltype(--cuda::std::declval<month&>()  ));
 
     static_assert(testConstexpr<month>(), "");
 

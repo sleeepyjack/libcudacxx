@@ -37,8 +37,8 @@ int main(int, char**)
     ASSERT_NOEXCEPT(++(cuda::std::declval<year&>())  );
     ASSERT_NOEXCEPT(  (cuda::std::declval<year&>())++);
 
-    ASSERT_SAME_TYPE(year , decltype(  std::declval<year&>()++));
-    ASSERT_SAME_TYPE(year&, decltype(++std::declval<year&>()  ));
+    ASSERT_SAME_TYPE(year , decltype(  cuda::std::declval<year&>()++));
+    ASSERT_SAME_TYPE(year&, decltype(++cuda::std::declval<year&>()  ));
 
     static_assert(testConstexpr<year>(), "");
 

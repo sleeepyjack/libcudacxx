@@ -12,7 +12,7 @@ namespace verbose_assert {
 typedef std::basic_ostream<char>&(EndLType)(std::basic_ostream<char>&);
 
 template <class Stream, class Tp,
-    class = decltype(std::declval<Stream&>() << std::declval<Tp const&>())>
+    class = decltype(cuda::std::declval<Stream&>() << cuda::std::declval<Tp const&>())>
 std::true_type IsStreamableImp(int);
 template <class Stream, class Tp> std::false_type IsStreamableImp(long);
 

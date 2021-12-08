@@ -33,11 +33,11 @@ int main(int, char**)
 {
     using year  = cuda::std::chrono::year;
 
-    ASSERT_NOEXCEPT(+std::declval<year>());
-    ASSERT_NOEXCEPT(-std::declval<year>());
+    ASSERT_NOEXCEPT(+cuda::std::declval<year>());
+    ASSERT_NOEXCEPT(-cuda::std::declval<year>());
 
-    ASSERT_SAME_TYPE(year, decltype(+std::declval<year>()));
-    ASSERT_SAME_TYPE(year, decltype(-std::declval<year>()));
+    ASSERT_SAME_TYPE(year, decltype(+cuda::std::declval<year>()));
+    ASSERT_SAME_TYPE(year, decltype(-cuda::std::declval<year>()));
 
     static_assert(testConstexpr<year>(), "");
 

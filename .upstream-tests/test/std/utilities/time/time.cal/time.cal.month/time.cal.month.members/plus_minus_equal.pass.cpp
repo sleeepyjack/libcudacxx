@@ -38,10 +38,10 @@ int main(int, char**)
     using month  = cuda::std::chrono::month;
     using months = cuda::std::chrono::months;
 
-    ASSERT_NOEXCEPT(cuda::std::declval<month&>() += std::declval<months&>());
-    ASSERT_NOEXCEPT(cuda::std::declval<month&>() -= std::declval<months&>());
-    ASSERT_SAME_TYPE(month&, decltype(cuda::std::declval<month&>() += std::declval<months&>()));
-    ASSERT_SAME_TYPE(month&, decltype(cuda::std::declval<month&>() -= std::declval<months&>()));
+    ASSERT_NOEXCEPT(cuda::std::declval<month&>() += cuda::std::declval<months&>());
+    ASSERT_NOEXCEPT(cuda::std::declval<month&>() -= cuda::std::declval<months&>());
+    ASSERT_SAME_TYPE(month&, decltype(cuda::std::declval<month&>() += cuda::std::declval<months&>()));
+    ASSERT_SAME_TYPE(month&, decltype(cuda::std::declval<month&>() -= cuda::std::declval<months&>()));
 
     static_assert(testConstexpr<month, months>(), "");
 

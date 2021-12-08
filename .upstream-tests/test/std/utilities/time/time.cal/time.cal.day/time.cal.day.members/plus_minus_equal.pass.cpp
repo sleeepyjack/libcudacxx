@@ -38,11 +38,11 @@ int main(int, char**)
     using day  = cuda::std::chrono::day;
     using days = cuda::std::chrono::days;
 
-    ASSERT_NOEXCEPT(cuda::std::declval<day&>() += std::declval<days>());
-    ASSERT_NOEXCEPT(cuda::std::declval<day&>() -= std::declval<days>());
+    ASSERT_NOEXCEPT(cuda::std::declval<day&>() += cuda::std::declval<days>());
+    ASSERT_NOEXCEPT(cuda::std::declval<day&>() -= cuda::std::declval<days>());
 
-    ASSERT_SAME_TYPE(day&, decltype(cuda::std::declval<day&>() += std::declval<days>()));
-    ASSERT_SAME_TYPE(day&, decltype(cuda::std::declval<day&>() -= std::declval<days>()));
+    ASSERT_SAME_TYPE(day&, decltype(cuda::std::declval<day&>() += cuda::std::declval<days>()));
+    ASSERT_SAME_TYPE(day&, decltype(cuda::std::declval<day&>() -= cuda::std::declval<days>()));
 
     static_assert(testConstexpr<day, days>(), "");
 

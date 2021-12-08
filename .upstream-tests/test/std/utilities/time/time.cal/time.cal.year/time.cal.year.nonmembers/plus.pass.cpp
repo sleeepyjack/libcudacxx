@@ -39,11 +39,11 @@ int main(int, char**)
     using year  = cuda::std::chrono::year;
     using years = cuda::std::chrono::years;
 
-    ASSERT_NOEXCEPT(                std::declval<year>() + std::declval<years>());
-    ASSERT_SAME_TYPE(year, decltype(cuda::std::declval<year>() + std::declval<years>()));
+    ASSERT_NOEXCEPT(                cuda::std::declval<year>() + cuda::std::declval<years>());
+    ASSERT_SAME_TYPE(year, decltype(cuda::std::declval<year>() + cuda::std::declval<years>()));
 
-    ASSERT_NOEXCEPT(                std::declval<years>() + std::declval<year>());
-    ASSERT_SAME_TYPE(year, decltype(cuda::std::declval<years>() + std::declval<year>()));
+    ASSERT_NOEXCEPT(                cuda::std::declval<years>() + cuda::std::declval<year>());
+    ASSERT_SAME_TYPE(year, decltype(cuda::std::declval<years>() + cuda::std::declval<year>()));
 
     static_assert(testConstexpr<year, years>(), "");
 

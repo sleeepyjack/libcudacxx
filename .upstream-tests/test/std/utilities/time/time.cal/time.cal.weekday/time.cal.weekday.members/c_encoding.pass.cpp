@@ -31,7 +31,7 @@ int main(int, char**)
 {
     using weekday = cuda::std::chrono::weekday;
 
-    ASSERT_NOEXCEPT(                    std::declval<weekday&>().c_encoding());
+    ASSERT_NOEXCEPT(                    cuda::std::declval<weekday&>().c_encoding());
     ASSERT_SAME_TYPE(unsigned, decltype(cuda::std::declval<weekday&>().c_encoding()));
 
     static_assert(testConstexpr<weekday>(), "");

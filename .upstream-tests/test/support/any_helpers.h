@@ -59,7 +59,7 @@ void assertEmpty(std::any const& a) {
 }
 
 template <class Type>
-constexpr auto has_value_member(int) -> decltype(std::declval<Type&>().value, true)
+constexpr auto has_value_member(int) -> decltype(cuda::std::declval<Type&>().value, true)
 { return true; }
 template <class> constexpr bool has_value_member(long) { return false; }
 

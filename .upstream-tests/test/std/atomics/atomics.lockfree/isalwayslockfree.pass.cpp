@@ -18,7 +18,7 @@
 
 #include "test_macros.h"
 
-#if !defined(__cpp_lib_atomic_is_always_lock_free)
+#if !defined(__cpp_lib_atomic_is_always_lock_free) && !defined(__CUDACC_RTC__)
 # error Feature test macro missing.
 #endif
 
