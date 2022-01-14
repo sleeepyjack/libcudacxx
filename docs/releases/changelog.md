@@ -11,7 +11,7 @@ It pulls in the latest version of upstream libc++ and marks the beginning of
 
 !-->
 
-## libcu++ 1.7.0
+## libcu++ 1.7.0 (CUDA Toolkit 11.6)
 
 libcu++ 1.7.0 is a major release. It adds `cuda::std::atomic_ref` for integral
 types. `cuda::std::atomic_ref` may potentially replace uses of CUDA specific
