@@ -386,7 +386,7 @@ NV_IF_TARGET(NV_IS_DEVICE,
             __elected = (__pipeline_asm_helper::__lane_id() == __elected_id);
             __add_count = __popc(__match_mask);
 ,
-            const bool __elected = true;
+            __elected = true;
             __add_count = 1;
 )
             if (__elected) {
